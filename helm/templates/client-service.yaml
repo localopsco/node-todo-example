@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -o helm
+    kompose.service.type: LoadBalancer
+    kompose.version: 1.32.0 (HEAD)
+  labels:
+    io.kompose.service: client
+  name: client
+spec:
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    io.kompose.service: client
+  type: {{.Values.client.serviceType}}

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -o helm
+    kompose.service.type: LoadBalancer
+    kompose.version: 1.32.0 (HEAD)
+  labels:
+    io.kompose.service: client
+  name: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: client
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c -o helm
+        kompose.service.type: LoadBalancer
+        kompose.version: 1.32.0 (HEAD)
+      labels:
+        io.kompose.network/node-sample-app-default: 'true'
+        io.kompose.service: client
+    spec:
+      containers:
+        - env:
+            - name: VITE_APP_VERSION
+              value: '{{.Chart.AppVersion}}'
+          image: public.ecr.aws/r5p6q2u1/node-sample-app-client:{{ .Chart.AppVersion }}
+          name: client
+          ports:
+            - containerPort: 3000
+              hostPort: 3000
+              protocol: TCP
+      restartPolicy: Always

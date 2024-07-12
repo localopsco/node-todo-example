@@ -1,0 +1,64 @@
+name: node-sample-app
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=todo_app
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - miniodata:/data
+  backend:
+    depends_on:
+      - db
+      - minio
+    build:
+      context: ./backend
+    # volumes:
+    #   - ./backend/src:/app/src
+    restart: always
+    ports:
+      - 3001:3001
+    environment:
+      - FRAMEWORK=node
+      - APP_VERSION=1.1.1
+      - TECH_STACK='Node.JS (Express), Postgres, Redis, React.JS'
+      - CLOUD_DEPENDENCIES='AWS S3'
+  client:
+    image: public.ecr.aws/r5p6q2u1/js-example-spa:latest
+    depends_on:
+      - backend
+    # build:
+    #   context: ./client
+    #   target: development
+    # volumes:
+    #   - ./client/src:/app/src
+    #   - ./client/public:/app/public
+    restart: always
+    environment:
+      PORT: 3000
+    ports:
+      - 3000:3000
+
+    labels:
+      kompose.service.type: LoadBalancer
+
+volumes:
+  pgdata:
+  miniodata:

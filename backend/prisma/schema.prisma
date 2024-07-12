@@ -1,0 +1,27 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Todo {
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(255)
+  description    String   @db.VarChar(255)
+  is_completed   Boolean  @default(false)
+  attachment_url String?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt()
+}
+
+enum Role {
+  USER
+  ADMIN
+}

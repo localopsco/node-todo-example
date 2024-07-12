@@ -1,0 +1,9 @@
+name: node-sample-app-helm
+description: A generated Helm Chart for helm from Skippbox Kompose
+version: 0.0.1
+appVersion: 0.0.1
+apiVersion: v2
+keywords:
+  - helm
+sources:
+home:

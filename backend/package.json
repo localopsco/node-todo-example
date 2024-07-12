@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "private": true,
+  "scripts": {
+    "prestart": "prisma migrate deploy && prisma db seed",
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "prepare": "npx prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.614.0",
+    "@aws-sdk/lib-storage": "^3.614.0",
+    "@prisma/client": "^5.16.2",
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.11",
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "prisma": "^5.16.2",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.3",
+    "zod": "^3.23.8"
+  }
+}
