@@ -30,16 +30,20 @@ services:
       - minio
     build:
       context: ./backend
+      target: development
     # volumes:
     #   - ./backend/src:/app/src
     restart: always
     ports:
       - 3001:3001
     environment:
-      - FRAMEWORK=node
-      - APP_VERSION=1.1.1
-      - TECH_STACK='Node.JS (Express), Postgres, Redis, React.JS'
-      - CLOUD_DEPENDENCIES='AWS S3'
+      NODE_ENV: ${NODE_ENV}
+      MINO_ENDPOINT: ${MINO_ENDPOINT}
+      AWS_REGION: ${AWS_REGION}
+      FRAMEWORK: ${FRAMEWORK}
+      APP_VERSION: ${APP_VERSION}
+      TECH_STACK: ${TECH_STACK}
+      CLOUD_DEPENDENCIES: ${CLOUD_DEPENDENCIES}
   client:
     image: public.ecr.aws/r5p6q2u1/js-example-spa:latest
     depends_on:

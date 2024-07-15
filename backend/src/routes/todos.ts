@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, DeleteObjectCommand, S3ClientConfig } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -10,17 +10,21 @@ import prisma from '../db';
 const todosRouter = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
-const s3Client = new S3Client({
-  endpoint: 'http://host.docker.internal:9000',
-  region: 'us-east-1',
+const s3config: S3ClientConfig = {
+  region: process.env.AWS_REGION,
   credentials: {
-    accessKeyId: 'minioadmin',
-    secretAccessKey: 'minioadmin',
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
-  forcePathStyle: true, // Required for Minio
-});
+};
+const bucketName = process.env.S3_BUCKET_NAME;
 
-const bucketName = 'node-storage';
+if (process.env.NODE_ENV === 'development') {
+  s3config.endpoint = process.env.MINO_ENDPOINT;
+  s3config.forcePathStyle = true; // Required for Minio
+}
+
+const s3Client = new S3Client(s3config);
 
 const uploadFile = async (filePath: string, key: string): Promise<string | undefined> => {
   try {
@@ -70,7 +74,7 @@ todosRouter.get('/', async (_req, res) => {
 todosRouter.post('/', async (req, res) => {
   const todo = await prisma.todo.create({
     data: {
-      name: req.body.name,
+      name: req.body.title,
       description: req.body.description,
       is_completed: false,
     },
