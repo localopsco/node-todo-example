@@ -29,8 +29,8 @@ services:
     depends_on:
       - db
       - minio
-    # volumes:
-    #   - ./src:/app/src
+    volumes:
+      - ./src:/app/src
     restart: always
     ports:
       - 3001:3001
@@ -51,19 +51,12 @@ services:
     image: public.ecr.aws/r5p6q2u1/js-example-spa:v1.0.0
     depends_on:
       - backend
-    # build:
-    #   context: ./client
-    #   target: development
-    # volumes:
-    #   - ./client/src:/app/src
-    #   - ./client/public:/app/public
     restart: always
     environment:
       PORT: 3000
       BACKEND_PORT: 3001
     ports:
       - 3000:3000
-
     labels:
       kompose.service.type: LoadBalancer
 

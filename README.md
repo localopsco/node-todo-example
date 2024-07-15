@@ -14,8 +14,6 @@ To start the development server:
 docker compose up
 ```
 
-You need to uncomment the volumes in compose.yml to enable hot reload. Make sure not to commit the volumes
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 # Building and pushing image tags
