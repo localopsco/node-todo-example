@@ -21,8 +21,10 @@ app.get('/', (_req, res) => {
 const apiRouter = express.Router();
 apiRouter.use('/meta', metaRouter);
 apiRouter.use('/tasks', todosRouter);
+apiRouter.get('/health', (_req, res) => res.status(200).json({ status: 'ok' }));
 
 app.use('/api/v1', apiRouter);
+app.get('/health', (_req, res) => res.status(200).json({ status: 'ok' }));
 
 app.listen(port, () => {
   console.log(`Todo app listening on http://localhost:${port}`);
