@@ -1,5 +1,5 @@
 apiVersion: v2
-name: node-todo-helm
+name: node-todo-example-helm
 description: An Example Node Helm Chart for LocalOps
 
 # A chart can be either an 'application' or a 'library' chart.

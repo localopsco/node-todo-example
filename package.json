@@ -3,9 +3,29 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prepare": "husky"
+    "prestart": "prisma migrate deploy && prisma db seed",
+    "predev": "npm run prestart",
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "prepare": "husky || npx prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.614.0",
+    "@aws-sdk/lib-storage": "^3.614.0",
+    "@prisma/client": "^5.16.2",
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "prisma": "^5.16.2",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.3"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.11",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.2",

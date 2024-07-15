@@ -4,10 +4,10 @@ const metaRouter = express.Router();
 
 metaRouter.get('/', async (_req, res) => {
   res.json({
-    framework: process.env.FRAMEWORK,
+    framework: 'node',
     version: process.env.APP_VERSION,
     stack: process.env.TECH_STACK,
-    cloud_dependencies: process.env.CLOUD_DEPENDENCIES
+    cloud_dependencies: process.env.CLOUD_DEPENDENCIES,
   });
 });
 

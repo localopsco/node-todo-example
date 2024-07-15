@@ -91,6 +91,8 @@ spec:
               value: {{.Values.be.s3.region}}
             - name: S3_BUCKET_NAME
               value: {{.Values.be.s3.bucket}}
+            - name: APP_VERSION
+              value: '{{ .Chart.AppVersion }}'
 
           ports:
             - name: be

@@ -25,16 +25,12 @@ services:
     volumes:
       - miniodata:/data
   backend:
+    build: '.'
     depends_on:
       - db
       - minio
-    build:
-      context: ./backend
-    command:
-      ['npm', 'run', 'dev']
-      # target: development
     # volumes:
-    #   - ./backend/src:/app/src
+    #   - ./src:/app/src
     restart: always
     ports:
       - 3001:3001
@@ -43,7 +39,6 @@ services:
       NODE_ENV: ${NODE_ENV}
       MINO_ENDPOINT: ${MINO_ENDPOINT}
       S3_REGION: ${S3_REGION}
-      FRAMEWORK: ${FRAMEWORK}
       APP_VERSION: ${APP_VERSION}
       TECH_STACK: ${TECH_STACK}
       CLOUD_DEPENDENCIES: ${CLOUD_DEPENDENCIES}
