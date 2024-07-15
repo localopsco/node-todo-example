@@ -4,8 +4,8 @@ const prisma = new PrismaClient();
 
 async function main() {
   const list = [
-    { name: 'Create example apps', description: 'For Go/Ruby/Node', completed: false },
-    { name: 'Switch to opentofu', description: 'Migrate from hashicorp terraform to opentofu', completed: false },
+    { title: 'Create example apps', description: 'For Go/Ruby/Node', completed: false },
+    { title: 'Switch to opentofu', description: 'Migrate from hashicorp terraform to opentofu', completed: false },
   ];
 
   const count = await prisma.todo.count();
@@ -17,7 +17,7 @@ async function main() {
   const promises = list.map((item) => {
     return prisma.todo.create({
       data: {
-        name: item.name,
+        title: item.title,
         description: item.description,
         is_completed: item.completed,
       },

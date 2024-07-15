@@ -48,7 +48,7 @@ services:
       DB_PASS: ${DB_PASS}
       DB_NAME: ${DB_NAME}
   client:
-    image: public.ecr.aws/r5p6q2u1/js-example-spa:v0.0.2
+    image: public.ecr.aws/r5p6q2u1/js-example-spa:v1.0.0
     depends_on:
       - backend
     # build:

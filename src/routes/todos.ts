@@ -74,7 +74,7 @@ todosRouter.get('/', async (_req, res) => {
 todosRouter.post('/', async (req, res) => {
   const todo = await prisma.todo.create({
     data: {
-      name: req.body.title,
+      title: req.body.title,
       description: req.body.description,
       is_completed: false,
     },
@@ -89,7 +89,7 @@ todosRouter.patch('/:id', async (req, res) => {
   const todo = await prisma.todo.update({
     where: { id },
     data: {
-      name: req.body.name,
+      title: req.body.title,
       description: req.body.description,
       is_completed: req.body.completed,
     },
