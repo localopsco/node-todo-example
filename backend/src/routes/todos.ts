@@ -11,7 +11,7 @@ const todosRouter = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
 const s3config: S3ClientConfig = {
-  region: process.env.AWS_REGION,
+  region: process.env.S3_REGION,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,

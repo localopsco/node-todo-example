@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "prestart": "prisma migrate deploy && prisma db seed",
+    "predev": "npm run prestart",
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
     "prepare": "npx prisma generate"

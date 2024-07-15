@@ -1,13 +1,18 @@
-FROM node:20-alpine AS base
+FROM node:20-alpine
 
 # Required envs
 ENV PORT=3001
 ENV NODE_ENV=production
-ENV AWS_REGION=
+ENV S3_REGION=
 ENV S3_BUCKET_NAME=
 ENV S3_BUCKET_NAME=
 ENV AWS_ACCESS_KEY_ID=
 ENV AWS_SECRET_ACCESS_KEY=
+ENV DB_HOST=docker.host.internal
+ENV DB_PORT=5432
+ENV DB_USER=postgres
+ENV DB_PASS=postgres
+ENV DB_NAME=todo_app
 
 # optional envs
 ENV FRAMEWORK=node
@@ -17,6 +22,8 @@ ENV CLOUD_DEPENDENCIES='AWS S3'
 
 WORKDIR /app
 
+ENV DATABASE_URL=postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public
+
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
 COPY prisma ./
@@ -24,11 +31,5 @@ RUN npm ci
 
 COPY . .
 EXPOSE ${PORT}
-
-FROM base AS development
-
-CMD ["npm" ,"run", "dev"]
-
-FROM base AS production
 
 CMD ["npm", "run", "start"]

@@ -30,22 +30,30 @@ services:
       - minio
     build:
       context: ./backend
-      target: development
+    command:
+      ['npm', 'run', 'dev']
+      # target: development
     # volumes:
     #   - ./backend/src:/app/src
     restart: always
     ports:
       - 3001:3001
+    env_file: .env
     environment:
       NODE_ENV: ${NODE_ENV}
       MINO_ENDPOINT: ${MINO_ENDPOINT}
-      AWS_REGION: ${AWS_REGION}
+      S3_REGION: ${S3_REGION}
       FRAMEWORK: ${FRAMEWORK}
       APP_VERSION: ${APP_VERSION}
       TECH_STACK: ${TECH_STACK}
       CLOUD_DEPENDENCIES: ${CLOUD_DEPENDENCIES}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
   client:
-    image: public.ecr.aws/r5p6q2u1/js-example-spa:latest
+    image: public.ecr.aws/r5p6q2u1/js-example-spa:v0.0.2
     depends_on:
       - backend
     # build:
@@ -57,6 +65,7 @@ services:
     restart: always
     environment:
       PORT: 3000
+      BACKEND_PORT: 3001
     ports:
       - 3000:3000
 
