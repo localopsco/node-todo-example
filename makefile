@@ -36,6 +36,6 @@ clean:
 		docker rmi $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(VERSION)
 
 push-helm:
-	helm package helm -d helm/.tmp/
-	helm push helm/.tmp/${IMAGE_NAME}-helm-${version}.tgz oci://${DOCKER_REGISTRY}/
-	helm registry logout public.ecr.aws
+		helm package helm -d helm/.tmp/
+		helm push helm/.tmp/${IMAGE_NAME}-helm-${VERSION}.tgz oci://${DOCKER_REGISTRY}/
+		helm registry logout public.ecr.aws
