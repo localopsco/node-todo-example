@@ -1,8 +1,12 @@
 # TodoApp
 
-A Sample Todo app for deliver built on nodejs using Express(Backend) + Vite(React Frontend) + Bullmq(workers) + Redis + Postgres
+A Sample Todo app for deliver built on nodejs using Express(Backend) + Vite(React Frontend)+ Postgres
 
-## Getting Started
+# Environment Variables
+
+Copy the `.env.sample` and create a `.env` file and set the required values
+
+## Dev Server
 
 To start the development server:
 
@@ -16,10 +20,16 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 # Building and pushing image tags
 
+To build docker images
+
+```bash
+make build
+```
+
 To push docker images
 
 ```bash
-make push-app version=0.0.2
+make push
 ```
 
 To push helm chart
@@ -41,7 +51,7 @@ minikube start
 Install the helm chart
 
 ```bash
-helm install node-sample-app oci://public.ecr.aws/r5p6q2u1/node-sample-app-helm --version={VERSION}
+helm install node-sample-app oci://public.ecr.aws/r5p6q2u1/node-todo-example-helm --version={VERSION}
 ```
 
 before installing next version, uninstall existing chart
