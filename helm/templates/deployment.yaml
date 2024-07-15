@@ -75,8 +75,6 @@ spec:
               value: '{{ .Values.db.user }}'
             - name: DB_PASS
               value: '{{ .Values.db.pass }}'
-            - name: DATABASE_URL
-              value: '{{ .Values.db.url }}'
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

@@ -20,7 +20,6 @@ db:
   name: todo_db
   user: todo_user
   pass: todo_pass
-  url: postgres://todo_user:todo_pass@postgres-service:5432/todo_db?schema=public
 
 be:
   service:
