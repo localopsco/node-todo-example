@@ -5,13 +5,14 @@ services:
     image: postgres:16-alpine
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=todo_app
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
     ports:
       - 5432:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+
   minio:
     image: minio/minio:latest
     container_name: minio
@@ -24,6 +25,7 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - miniodata:/data
+
   backend:
     build: '.'
     depends_on:
@@ -32,33 +34,30 @@ services:
     volumes:
       - ./src:/app/src
     restart: always
-    ports:
-      - 3001:3001
-    env_file: .env
     environment:
-      NODE_ENV: ${NODE_ENV}
-      MINO_ENDPOINT: ${MINO_ENDPOINT}
-      S3_REGION: ${S3_REGION}
-      APP_VERSION: ${APP_VERSION}
-      TECH_STACK: ${TECH_STACK}
-      CLOUD_DEPENDENCIES: ${CLOUD_DEPENDENCIES}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_NAME: ${DB_NAME}
+      PORT: 3001
+    env_file: '.env'
+
   client:
-    image: public.ecr.aws/r5p6q2u1/js-example-spa:v1.0.0
+    image: public.ecr.aws/r5p6q2u1/js-example-spa:v1.0.2
     depends_on:
       - backend
     restart: always
     environment:
       PORT: 3000
-      BACKEND_PORT: 3001
+
+  gateway:
+    image: nginx:alpine
+    depends_on:
+      - db
+      - client
+    volumes:
+      - ./templates:/etc/nginx/templates
     ports:
-      - 3000:3000
-    labels:
-      kompose.service.type: LoadBalancer
+      - 3000:80
+    environment:
+      - CLIENT_PORT=3000
+      - BACKEND_PORT=3001
 
 volumes:
   pgdata:
