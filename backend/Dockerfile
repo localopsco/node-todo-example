@@ -1,6 +1,7 @@
 FROM node:20-alpine AS base
 
 # Required envs
+ENV PORT=3001
 ENV NODE_ENV=production
 ENV AWS_REGION=
 ENV S3_BUCKET_NAME=
@@ -22,6 +23,7 @@ COPY prisma ./
 RUN npm ci
 
 COPY . .
+EXPOSE ${PORT}
 
 FROM base AS development
 
