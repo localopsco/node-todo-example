@@ -13,8 +13,12 @@ IMAGE_NAME=$(shell jq -r '.name' $(PACKAGE_JSON))
 all: build push
 
 login:
-	@echo "Loggin into AWS account"
-	aws ecr-public get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin public.ecr.aws
+	@echo "Logging into AWS account"
+	aws ecr-public get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${DOCKER_REGISTRY}
+
+logout:
+	@echo "Logging out of AWS account"
+	helm registry logout public.ecr.aws
 
 # Build Docker image
 build:
@@ -38,4 +42,3 @@ clean:
 push-helm:
 		helm package helm -d helm/.tmp/
 		helm push helm/.tmp/${IMAGE_NAME}-helm-${VERSION}.tgz oci://${DOCKER_REGISTRY}/
-		helm registry logout public.ecr.aws
