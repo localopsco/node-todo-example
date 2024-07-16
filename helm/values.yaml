@@ -33,5 +33,6 @@ db:
   pass: todo_pass
 
 s3:
+  enabled: true
   bucket: node-todo-example-attachments
   region: ap-south-1
