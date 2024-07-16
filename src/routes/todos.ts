@@ -61,6 +61,15 @@ todosRouter.delete('/:id', async (req, res) => {
     where: { id },
   });
 
+  if (todo.attachment_url) {
+    const attachmentKey = path.basename(todo.attachment_url);
+    try {
+      await s3.deleteFile(attachmentKey);
+    } catch {
+      return res.json({ success: `Todo deleted but failed to delete attachment at: ${todo.attachment_url}` });
+    }
+  }
+
   res.json({ success: 'true' });
 });
 
@@ -109,10 +118,10 @@ todosRouter.delete('/:id/attach', async (req, res) => {
     return res.status(422).send('Todo does not have an attachment to delete');
   }
 
-  const key = path.basename(todo.attachment_url);
+  const attachmentKey = path.basename(todo.attachment_url);
 
   try {
-    await s3.deleteFile(key);
+    await s3.deleteFile(attachmentKey);
     const todo = await prisma.todo.update({
       where: { id },
       data: {
