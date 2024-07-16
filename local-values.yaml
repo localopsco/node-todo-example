@@ -1,5 +1,0 @@
-client:
-  serviceType: LoadBalancer
-
-buckets:
-  bucketName: node-sample-app-bucket

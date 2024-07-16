@@ -1,0 +1,7 @@
+service:
+  type: NodePort
+
+# Optional S3 config
+s3:
+  region: ap-south-1
+  bucket: node-todo-example-attachments

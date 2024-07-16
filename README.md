@@ -69,4 +69,4 @@ minikube tunnel
 
 ### Values to use while installing in LocalOps
 
-See [local-values.yaml](./local-values.yaml) for the values
+See [example-values.yaml](./example-values.yaml) for the values
