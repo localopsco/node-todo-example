@@ -1,38 +1,62 @@
-replicaCount: 1
+# Entry service config
 
 service:
   type: ClusterIP
   port: 3030
   targetPort: 3030
 
+# Gateway config
 gateway:
-  image: public.ecr.aws/r5p6q2u1/gateway-example
-  imageVersion: 0.0.1
+  image:
+    repository: nginx
+    tag: stable-alpine3.19
+  replicaCount: 1
 
+# Frontend config
 fe:
   service:
     type: ClusterIP
     port: 3050
     targetPort: 3050
-  image: public.ecr.aws/r5p6q2u1/js-example-spa
-  imageVersion: v1.0.2
+  image:
+    repository: public.ecr.aws/r5p6q2u1/js-example-spa
+    tag: v1.0.2
+  replicaCount: 1
+  env:
+    # Environment variables can also be passed here
+    ENABLE_CAPTCHA: 'false'
+    ALLOW_SIGNUP: 'false'
 
+# Backend config
 be:
   service:
     type: ClusterIP
-    port: 3001
+    port: 8000
     targetPort: 3001
-  image: public.ecr.aws/r5p6q2u1/node-todo-example
-  imageVersion: v1.0.1
+  image:
+    repository: public.ecr.aws/r5p6q2u1/node-todo-example
+    tag: v1.0.1
+  replicaCount: 1
+  env:
+    # Environment variables can also be passed here
+    ENABLE_CAPTCHA: 'false'
+    ALLOW_SIGNUP: 'false'
 
-db:
-  host: postgres-service
-  port: 5432
-  name: todo_db
-  user: todo_user
-  pass: todo_pass
+# DB - Postgres values
+postgresql:
+  auth:
+    username: todo_user
+    password: todo_pass
+    database: todo_db
+  primary:
+    service:
+      port: 5432
+    persistence:
+      enabled: true
+      size: 1Gi
 
+# S3 config
 s3:
-  enabled: true
+  enabled: false
   bucket: node-todo-example-attachments
   region: ap-south-1
