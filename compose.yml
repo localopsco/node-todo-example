@@ -39,7 +39,7 @@ services:
     env_file: '.env'
 
   client:
-    image: public.ecr.aws/r5p6q2u1/js-example-spa:v1.0.2
+    image: public.ecr.aws/r5p6q2u1/js-example-spa:v1.0.3
     depends_on:
       - backend
     restart: always

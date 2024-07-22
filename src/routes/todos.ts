@@ -74,6 +74,10 @@ todosRouter.delete('/:id', async (req, res) => {
 });
 
 todosRouter.post('/:id/attach', upload.single('file'), async (req, res) => {
+  if (!s3.isEnabled()) {
+    return res.status(403).send('Attachment not supported');
+  }
+
   const id = Number(req.params.id);
 
   const filePath = req.file?.path;
@@ -105,6 +109,10 @@ todosRouter.post('/:id/attach', upload.single('file'), async (req, res) => {
 
 todosRouter.delete('/:id/attach', async (req, res) => {
   const id = Number(req.params.id);
+
+  if (!s3.isEnabled()) {
+    return res.status(403).send('Attachment not supported');
+  }
 
   const todo = await prisma.todo.findUnique({
     where: { id },

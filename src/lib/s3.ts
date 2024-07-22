@@ -17,9 +17,40 @@ if (process.env.NODE_ENV === 'development') {
   s3config.forcePathStyle = true; // Required for Minio
 }
 
-const s3Client = new S3Client(s3config);
+let s3ClientCache: S3Client | null = null;
+const getS3Client = () => {
+  if (s3ClientCache) return s3ClientCache;
+  s3ClientCache = new S3Client(s3config);
+  return s3ClientCache;
+};
+
+export const isEnabled = () => {
+  if (process.env.S3_ENABLED !== 'true') {
+    console.log('Notice: S3 is disabled via flag S3_ENABLED. Set it to `true` to enable it');
+    return false;
+  }
+
+  if (!process.env.S3_REGION) {
+    console.error('Notice: Region is missing. Skipping initialization');
+    return false;
+  }
+
+  if (!bucketName) {
+    console.error('Notice: Bucket name is missing. Skipping initialization');
+    return false;
+  }
+
+  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+    console.error('Notice: Missing AWS Credentials. Skipping initialization');
+    return false;
+  }
+
+  return true;
+};
 
 export const uploadFile = async (filePath: string, key: string): Promise<string | undefined> => {
+  const s3Client = getS3Client();
+
   try {
     const fileStream = fs.createReadStream(filePath);
     const uploadParams = {
@@ -42,6 +73,8 @@ export const uploadFile = async (filePath: string, key: string): Promise<string 
 };
 
 export const deleteFile = async (key: string): Promise<undefined> => {
+  const s3Client = getS3Client();
+
   try {
     const deleteCommand = new DeleteObjectCommand({
       Bucket: bucketName,

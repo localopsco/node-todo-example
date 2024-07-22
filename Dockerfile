@@ -3,6 +3,7 @@ FROM node:20-alpine
 # Required envs
 ENV PORT=3001
 ENV NODE_ENV=production
+ENV S3_ENABLED=
 ENV S3_REGION=
 ENV S3_BUCKET_NAME=
 ENV AWS_ACCESS_KEY_ID=
@@ -15,7 +16,7 @@ ENV DB_NAME=todo_app
 
 # optional envs
 ENV APP_VERSION=0.0.0
-ENV TECH_STACK='Node.JS (Express), Postgres, Redis, React.JS'
+ENV TECH_STACK='Node.JS (Express), Postgres, React.JS'
 ENV CLOUD_DEPENDENCIES='AWS S3'
 
 WORKDIR /app
