@@ -32,7 +32,7 @@ be:
   service:
     type: ClusterIP
     port: 8000
-    targetPort: 3001
+    targetPort: 8000
   image:
     repository: public.ecr.aws/r5p6q2u1/node-todo-example
     tag: v1.0.1
