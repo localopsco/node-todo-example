@@ -46,6 +46,30 @@ Start minikube
 minikube start
 ```
 
+Install the required helm dependencies
+
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm dependency update
+```
+
+If you are enabling s3 support, which is disabled by default, Convert your AccessKey and SecretAccessKey to base64 encode string
+
+```bash
+echo -n 'AwsAccessKeyId' | base64
+echo -n 'AwsSecretAccessKey' | base64
+```
+
+and replace them in [helm/secret.yaml](./helm/secret.yaml) and run
+
+```bash
+kubectl apply -f helm/secret.yaml
+```
+
+> [!NOTE]
+> You don't need to apply secrets while deploying via LocalOps
+
 Install the helm chart
 
 ```bash

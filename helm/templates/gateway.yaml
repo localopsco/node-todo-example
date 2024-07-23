@@ -1,0 +1,87 @@
+# Gateway Configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-configmap
+data:
+  nginx.conf: |
+    events { }
+
+    http {
+      upstream frontend {
+        server fe-service:{{ .Values.fe.service.port }};
+      }
+
+      upstream backend {
+        server be-service:{{ .Values.be.service.port }};
+      }
+
+      server {
+        listen {{ .Values.gateway.service.targetPort }};
+
+        location / {
+          proxy_pass http://frontend;
+        }
+
+        location /api/ {
+          # Adding trailing slash if the request URI does not end with a slash
+          if ($request_uri !~* /$) {
+              # Add a trailing slash to the request URI
+              rewrite ^(.*)$ $1/ break;
+          }
+
+          proxy_pass http://backend;
+        }
+      }
+    }
+
+---
+
+# Gateway Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-deployment
+spec:
+  replicas: {{ .Values.gateway.replicaCount }}
+  selector:
+    matchLabels:
+      app: gateway-template
+  template:
+    metadata:
+      labels:
+        app: gateway-template
+    spec:
+      containers:
+        - name: gateway-container
+          image: '{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}'
+          {{- if .Values.gateway.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+          {{- end }}
+          ports:
+            - name: gateway
+              containerPort: {{ .Values.gateway.service.targetPort }}
+          volumeMounts:
+            - name: nginx-configmap
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: nginx-configmap
+          configMap:
+            name: gateway-configmap
+
+---
+
+# Gateway Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  type: {{ .Values.gateway.service.type }}
+  selector:
+    app: gateway-template
+  ports:
+    - protocol: TCP
+      port: {{ .Values.gateway.service.port }}
+      targetPort: {{ .Values.gateway.service.targetPort }}

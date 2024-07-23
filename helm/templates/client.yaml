@@ -1,0 +1,55 @@
+# Frontend Configmap
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fe-configmap
+data:
+  PORT: "{{ .Values.fe.service.targetPort }}"
+{{ toYaml .Values.fe.env | indent 2 }}
+
+---
+
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fe-deployment
+spec:
+  replicas: {{ .Values.fe.replicaCount }}
+  selector:
+    matchLabels:
+      app: fe-template
+  template:
+    metadata:
+      labels:
+        app: fe-template
+    spec:
+      containers:
+        - name: fe-container
+          image: "{{ .Values.fe.image.repository }}:{{ .Values.fe.image.tag }}"
+          {{- if .Values.fe.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.fe.image.pullPolicy }}
+          {{- end }}
+          envFrom:
+          - configMapRef:
+              name: fe-configmap
+          ports:
+            - name: fe
+              containerPort: {{ .Values.fe.service.targetPort }}
+
+---
+
+# Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: fe-service
+spec:
+  type: {{ .Values.fe.service.type }}
+  selector:
+    app: fe-template
+  ports:
+    - protocol: TCP
+      port: {{ .Values.fe.service.port }}
+      targetPort: {{ .Values.fe.service.targetPort }}

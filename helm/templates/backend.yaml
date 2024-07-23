@@ -1,68 +1,23 @@
+# Backend Configmap
 
-# Gateway Deployment
-
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: gateway-deployment
-spec:
-  replicas: {{ .Values.gateway.replicaCount }}
-  selector:
-    matchLabels:
-      app: gateway-template
-  template:
-    metadata:
-      labels:
-        app: gateway-template
-    spec:
-      containers:
-        - name: gateway-container
-          image: '{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}'
-          {{- if .Values.gateway.image.pullPolicy }}
-          imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
-          {{- end }}
-          ports:
-            - name: gateway
-              containerPort: {{ .Values.service.targetPort }}
-          volumeMounts:
-            - name: nginx-configmap
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
-      volumes:
-        - name: nginx-configmap
-          configMap:
-            name: gateway-configmap
-
----
-
-# Frontend Deployment
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: fe-deployment
-spec:
-  replicas: {{ .Values.fe.replicaCount }}
-  selector:
-    matchLabels:
-      app: fe-template
-  template:
-    metadata:
-      labels:
-        app: fe-template
-    spec:
-      containers:
-        - name: fe-container
-          image: "{{ .Values.fe.image.repository }}:{{ .Values.fe.image.tag }}"
-          {{- if .Values.fe.image.pullPolicy }}
-          imagePullPolicy: {{ .Values.fe.image.pullPolicy }}
-          {{- end }}
-          envFrom:
-          - configMapRef:
-              name: fe-configmap
-          ports:
-            - name: fe
-              containerPort: {{ .Values.fe.service.targetPort }}
+  name: be-configmap
+data:
+  PORT: "{{ .Values.be.service.targetPort }}"
+  APP_VERSION: "{{ .Chart.AppVersion }}"
+  DB_HOST: {{ include "postgresql.host" . | quote }}
+  DB_PORT: "{{ .Values.postgresql.primary.service.port }}"
+  DB_NAME: "{{ .Values.postgresql.auth.database }}"
+  DB_USER: "{{ .Values.postgresql.auth.username }}"
+  DB_PASS: "{{ .Values.postgresql.auth.password }}"
+  S3_ENABLED: "{{ .Values.s3.enabled }}"
+  {{- if .Values.s3.enabled }}
+  S3_REGION: "{{ .Values.s3.region }}"
+  S3_BUCKET_NAME: "{{ .Values.s3.bucket }}"
+  {{- end }}
+{{ toYaml .Values.be.env | indent 2 }}
 
 ---
 
@@ -91,6 +46,7 @@ spec:
           envFrom:
           - configMapRef:
               name: be-configmap
+          {{- if .Values.s3.enabled }}
           env:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
@@ -102,6 +58,7 @@ spec:
                 secretKeyRef:
                   name: cloud-provider-secret
                   key: aws_secret_access_key
+          {{- end }}
           ports:
             - name: be
               containerPort: {{ .Values.be.service.targetPort }}
@@ -116,3 +73,20 @@ spec:
         command: ['sh', '-c',
           'echo Checking if postgres is up; until pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT;
           do echo Waiting for postgres database to be up...; sleep 2; done; echo Postgres is up!']
+
+---
+
+# Backend Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: be-service
+spec:
+  type: {{ .Values.be.service.type }}
+  selector:
+    app: be-template
+  ports:
+    - protocol: TCP
+      port: {{ .Values.be.service.port }}
+      targetPort: {{ .Values.be.service.targetPort }}

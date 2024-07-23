@@ -1,12 +1,9 @@
-# Entry service config
-
-service:
-  type: ClusterIP
-  port: 3030
-  targetPort: 3030
-
-# Gateway config
+# Gateway config (This is the entry service)
 gateway:
+  service:
+    type: ClusterIP
+    port: 3030
+    targetPort: 3030
   image:
     repository: nginx
     tag: stable-alpine3.19
@@ -20,7 +17,7 @@ fe:
     targetPort: 3050
   image:
     repository: public.ecr.aws/r5p6q2u1/js-example-spa
-    tag: v1.0.2
+    tag: v1.0.3
   replicaCount: 1
   env:
     # Environment variables can also be passed here
@@ -35,7 +32,7 @@ be:
     targetPort: 8000
   image:
     repository: public.ecr.aws/r5p6q2u1/node-todo-example
-    tag: v1.0.1
+    tag: v1.0.2
   replicaCount: 1
   env:
     # Environment variables can also be passed here
