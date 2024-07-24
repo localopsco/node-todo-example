@@ -1,15 +1,3 @@
-# Frontend Configmap
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: fe-configmap
-data:
-  PORT: "{{ .Values.fe.service.targetPort }}"
-{{ toYaml .Values.fe.env | indent 2 }}
-
----
-
 # Frontend Deployment
 apiVersion: apps/v1
 kind: Deployment
@@ -31,9 +19,10 @@ spec:
           {{- if .Values.fe.image.pullPolicy }}
           imagePullPolicy: {{ .Values.fe.image.pullPolicy }}
           {{- end }}
-          envFrom:
-          - configMapRef:
-              name: fe-configmap
+          env:
+            - name: PORT
+              value: "{{ .Values.fe.service.targetPort }}"
+{{ toYaml .Values.fe.env | indent 12 }}
           ports:
             - name: fe
               containerPort: {{ .Values.fe.service.targetPort }}

@@ -1,28 +1,4 @@
-# Backend Configmap
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: be-configmap
-data:
-  PORT: "{{ .Values.be.service.targetPort }}"
-  APP_VERSION: "{{ .Chart.AppVersion }}"
-  DB_HOST: {{ include "postgresql.host" . | quote }}
-  DB_PORT: "{{ .Values.postgresql.primary.service.port }}"
-  DB_NAME: "{{ .Values.postgresql.auth.database }}"
-  DB_USER: "{{ .Values.postgresql.auth.username }}"
-  DB_PASS: "{{ .Values.postgresql.auth.password }}"
-  S3_ENABLED: "{{ .Values.s3.enabled }}"
-  {{- if .Values.s3.enabled }}
-  S3_REGION: "{{ .Values.s3.region }}"
-  S3_BUCKET_NAME: "{{ .Values.s3.bucket }}"
-  {{- end }}
-{{ toYaml .Values.be.env | indent 2 }}
-
----
-
 # Backend Deployment
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -43,11 +19,30 @@ spec:
           {{- if .Values.be.image.pullPolicy }}
           imagePullPolicy: {{ .Values.be.image.pullPolicy }}
           {{- end }}
-          envFrom:
-          - configMapRef:
-              name: be-configmap
-          {{- if .Values.s3.enabled }}
           env:
+            - name: PORT
+              value: "{{ .Values.be.service.targetPort }}"
+            - name: APP_VERSION
+              value: "{{ .Chart.AppVersion }}"
+            - name: DB_HOST
+              value: {{ include "postgresql.host" . | quote }}
+            - name: DB_PORT
+              value: "{{ .Values.postgresql.primary.service.port }}"
+            - name: DB_NAME
+              value: "{{ .Values.postgresql.auth.database }}"
+            - name: DB_USER
+              value: "{{ .Values.postgresql.auth.username }}"
+            - name: DB_PASS
+              value: "{{ .Values.postgresql.auth.password }}"
+            - name: S3_ENABLED
+              value: "{{ .Values.s3.enabled }}"
+            {{- if .Values.s3.enabled }}
+            - name: S3_REGION
+              value: "{{ .Values.s3.region }}"
+            - name: S3_BUCKET_NAME
+              value: "{{ .Values.s3.bucket }}"
+            {{- end }}
+{{ toYaml .Values.be.env | indent 12 }}
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
